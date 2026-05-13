@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - FreshMart</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="auth-box">
+    <h2>🛒 FreshMart</h2>
+    <div th:if="${param.registered}" class="alert alert-success">Account created! Please login.</div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <form method="post" action="/login">
+        <div class="form-group">
+            <label>Email</label>
+            <!-- Email pre-filled from cookie if user logged in before -->
+            <input type="email" name="email" required placeholder="your@email.com"
+                   th:value="${rememberedEmail}">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" required placeholder="Password">
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <p style="text-align:center; margin-top:16px;">
+        No account? <a href="/register">Register here</a>
+    </p>
+</div>
+</body>
+</html>
