@@ -1,156 +1,73 @@
-package com.supermarket.controller;
+package com.supermarket.service;
 
-import com.supermarket.model.CartItem;
-import com.supermarket.model.Product;
-import com.supermarket.model.User;
-import com.supermarket.service.OrderService;
-import com.supermarket.service.ProductService;
-import jakarta.servlet.http.HttpSession;
+import com.supermarket.model.*;
+import com.supermarket.repository.OrderRepository;
+import com.supermarket.repository.OrderItemRepository;
+import com.supermarket.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-@Controller
-@RequestMapping("/user")
-public class UserController {
-
-    @Autowired
-    private ProductService productService;
+@Service
+public class OrderService {
 
     @Autowired
-    private OrderService orderService;
+    private OrderRepository orderRepository;
 
-    private User getUser(HttpSession session) {
-        return (User) session.getAttribute("user");
-    }
+    @Autowired
+    private OrderItemRepository orderItemRepository;
 
-    @SuppressWarnings("unchecked")
-    private Map<Long, CartItem> getCart(HttpSession session) {
-        Map<Long, CartItem> cart = (Map<Long, CartItem>) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new HashMap<>();
-            session.setAttribute("cart", cart);
-        }
-        return cart;
-    }
+    @Autowired
+    private ProductRepository productRepository;
 
-    @GetMapping("/home")
-    public String home(HttpSession session, Model model,
-                       @RequestParam(required = false) String search,
-                       @RequestParam(required = false) String category) {
-        if (getUser(session) == null) return "redirect:/login";
+    public Order placeOrder(User user, Map<Long, CartItem> cart, String address) {
+        Order order = new Order();
+        order.setUser(user);
+        order.setDeliveryAddress(address);
 
-        List<Product> products;
-        if (search != null && !search.isBlank()) {
-            products = productService.searchProducts(search);
-        } else if (category != null && !category.isBlank()) {
-            products = productService.getByCategory(category);
-        } else {
-            products = productService.getAllProducts();
-        }
+        double total = 0;
+        order = orderRepository.save(order); // save first to get ID
 
-        model.addAttribute("products", products);
-        model.addAttribute("user", getUser(session));
-        model.addAttribute("cartSize", getCart(session).size());
-        return "user/home";
-    }
+        List<OrderItem> items = new ArrayList<>();
+        for (CartItem cartItem : cart.values()) {
+            Optional<Product> productOpt = productRepository.findById(cartItem.getProductId());
+            if (productOpt.isPresent()) {
+                Product product = productOpt.get();
+                OrderItem item = new OrderItem(order, product, cartItem.getQuantity());
+                orderItemRepository.save(item);
+                items.add(item);
+                total += item.getSubtotal();
 
-    @PostMapping("/cart/add")
-    public String addToCart(@RequestParam Long productId, @RequestParam(defaultValue = "1") int quantity,
-                            HttpSession session) {
-        if (getUser(session) == null) return "redirect:/login";
-
-        productService.findById(productId).ifPresent(product -> {
-            Map<Long, CartItem> cart = getCart(session);
-            if (cart.containsKey(productId)) {
-                cart.get(productId).setQuantity(cart.get(productId).getQuantity() + quantity);
-            } else {
-                cart.put(productId, new CartItem(productId, product.getName(), product.getPrice(), quantity));
+                // reduce stock
+                product.setStock(product.getStock() - cartItem.getQuantity());
+                productRepository.save(product);
             }
-        });
-        return "redirect:/user/cart";
-    }
-
-    @GetMapping("/cart")
-    public String viewCart(HttpSession session, Model model) {
-        if (getUser(session) == null) return "redirect:/login";
-
-        Map<Long, CartItem> cart = getCart(session);
-        double total = cart.values().stream().mapToDouble(CartItem::getSubtotal).sum();
-
-        model.addAttribute("cart", cart.values());
-        model.addAttribute("total", total);
-        model.addAttribute("user", getUser(session));
-        return "user/cart";
-    }
-
-    @PostMapping("/cart/remove")
-    public String removeFromCart(@RequestParam Long productId, HttpSession session) {
-        getCart(session).remove(productId);
-        return "redirect:/user/cart";
-    }
-
-    @GetMapping("/checkout")
-    public String checkoutPage(HttpSession session, Model model) {
-        if (getUser(session) == null) return "redirect:/login";
-        Map<Long, CartItem> cart = getCart(session);
-        if (cart.isEmpty()) return "redirect:/user/cart";
-
-        double total = cart.values().stream().mapToDouble(CartItem::getSubtotal).sum();
-        model.addAttribute("total", total);
-        model.addAttribute("user", getUser(session));
-        return "user/checkout";
-    }
-
-    @PostMapping("/checkout")
-    public String placeOrder(@RequestParam String address, HttpSession session) {
-        User user = getUser(session);
-        if (user == null) return "redirect:/login";
-
-        Map<Long, CartItem> cart = getCart(session);
-        if (cart.isEmpty()) return "redirect:/user/cart";
-
-        orderService.placeOrder(user, cart, address);
-        session.removeAttribute("cart");
-        return "redirect:/user/orders?success";
-    }
-
-    @GetMapping("/orders")
-    public String myOrders(HttpSession session, Model model) {
-        User user = getUser(session);
-        if (user == null) return "redirect:/login";
-
-        model.addAttribute("orders", orderService.getUserOrders(user));
-        model.addAttribute("user", user);
-        return "user/orders";
-    }
-
-    @GetMapping("/profile")
-    public String profile(HttpSession session, Model model) {
-        User user = getUser(session);
-        if (user == null) return "redirect:/login";
-        model.addAttribute("user", user);
-        return "user/profile";
-    }
-
-    @PostMapping("/profile")
-    public String updateProfile(@ModelAttribute User updated, HttpSession session) {
-        User user = getUser(session);
-        if (user == null) return "redirect:/login";
-
-        user.setName(updated.getName());
-        user.setPhone(updated.getPhone());
-        user.setAddress(updated.getAddress());
-        // only update password if provided
-        if (updated.getPassword() != null && !updated.getPassword().isBlank()) {
-            user.setPassword(updated.getPassword());
         }
-        session.setAttribute("user", user);
-        return "redirect:/user/profile?updated";
+
+        order.setItems(items);
+        order.setTotalPrice(total);
+        return orderRepository.save(order);
+    }
+
+    public List<Order> getUserOrders(User user) {
+        return orderRepository.findByUserOrderByCreatedAtDesc(user);
+    }
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    public Optional<Order> findById(Long id) {
+        return orderRepository.findById(id);
+    }
+
+    public void updateStatus(Long orderId, String status) {
+        orderRepository.findById(orderId).ifPresent(order -> {
+            order.setStatus(status);
+            orderRepository.save(order);
+        });
     }
 }
