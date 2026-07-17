@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Orders - FreshMart</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <span class="brand">🛒 FreshMart</span>
+    <div>
+        <a href="/user/home">Shop</a>
+        <a href="/user/cart">Cart</a>
+        <a href="/user/orders">My Orders</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h2 style="margin-bottom:20px;">My Orders</h2>
+
+    <div th:if="${param.success}" class="alert alert-success">Order placed successfully! 🎉</div>
+
+    <p th:if="${#lists.isEmpty(orders)}" style="color:#888;">You have no orders yet.</p>
+
+    <div th:each="order : ${orders}" class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div>
+                <strong>Order #<span th:text="${order.id}"></span></strong>
+                &nbsp;
+                <span class="badge"
+                      th:classappend="${order.status == 'PENDING'} ? 'badge-pending' :
+                                       (${order.status == 'CONFIRMED'} ? 'badge-confirmed' :
+                                       (${order.status == 'DELIVERED'} ? 'badge-delivered' : 'badge-cancelled'))"
+                      th:text="${order.status}"></span>
+            </div>
+            <div style="color:#888; font-size:0.9rem;" th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}"></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${order.items}">
+                    <td th:text="${item.product.name}"></td>
+                    <td th:text="${item.quantity}"></td>
+                    <td>EGP <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span></td>
+                    <td>EGP <span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}"></span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top:12px; display:flex; justify-content:space-between;">
+            <span style="color:#888;">Deliver to: <span th:text="${order.deliveryAddress}"></span></span>
+            <strong>Total: EGP <span th:text="${#numbers.formatDecimal(order.totalPrice, 1, 2)}"></span></strong>
+        </div>
+    </div>
+</div>
+</body>
+</html>

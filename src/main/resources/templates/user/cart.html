@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart - FreshMart</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <span class="brand">🛒 FreshMart</span>
+    <div>
+        <a href="/user/home">Shop</a>
+        <a href="/user/cart">Cart</a>
+        <a href="/user/orders">My Orders</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h2 style="margin-bottom:20px;">Your Cart</h2>
+
+    <div th:if="${#lists.isEmpty(cart)}" class="card">
+        <p>Your cart is empty. <a href="/user/home">Continue shopping</a></p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(cart)}">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Subtotal</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${cart}">
+                    <td th:text="${item.productName}"></td>
+                    <td>EGP <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span></td>
+                    <td th:text="${item.quantity}"></td>
+                    <td>EGP <span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}"></span></td>
+                    <td>
+                        <form method="post" action="/user/cart/remove">
+                            <input type="hidden" name="productId" th:value="${item.productId}">
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="3">Total</td>
+                    <td colspan="2">EGP <span th:text="${#numbers.formatDecimal(total, 1, 2)}"></span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top:20px; display:flex; gap:12px;">
+            <a href="/user/home" class="btn btn-secondary">Continue Shopping</a>
+            <a href="/user/checkout" class="btn btn-primary" style="width:auto;">Proceed to Checkout</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

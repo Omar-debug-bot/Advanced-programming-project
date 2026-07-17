@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - FreshMart</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <span class="brand">🛒 FreshMart</span>
+    <div>
+        <a href="/user/home">Shop</a>
+        <a href="/user/cart">Cart</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="auth-box" style="margin-top:30px;">
+        <h2>Checkout</h2>
+        <p style="text-align:center; margin-bottom:20px; color:#2e7d32; font-size:1.1rem;">
+            Total: EGP <span th:text="${#numbers.formatDecimal(total, 1, 2)}"></span>
+        </p>
+        <form method="post" action="/user/checkout">
+            <div class="form-group">
+                <label>Delivery Address</label>
+                <textarea name="address" rows="3" required placeholder="Enter your full delivery address..."
+                          th:text="${user.address}"
+                          style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:1rem;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Place Order</button>
+        </form>
+        <a href="/user/cart" style="display:block; text-align:center; margin-top:12px;">Back to Cart</a>
+    </div>
+</div>
+</body>
+</html>

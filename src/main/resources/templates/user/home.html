@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Shop - FreshMart</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <span class="brand">🛒 FreshMart</span>
+    <div>
+        <a href="/user/home">Shop</a>
+        <a href="/user/cart">Cart (<span th:text="${cartSize}">0</span>)</a>
+        <a href="/user/orders">My Orders</a>
+        <a href="/user/profile">Profile</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h2 style="margin-bottom:16px;">Hello, <span th:text="${user.name}"></span>!</h2>
+
+    <!-- Search & Filter -->
+    <form method="get" action="/user/home" class="filters">
+        <input type="text" name="search" placeholder="Search products..." th:value="${param.search}">
+        <select name="category">
+            <option value="">All Categories</option>
+            <option value="Dairy">Dairy</option>
+            <option value="Bakery">Bakery</option>
+            <option value="Fruits">Fruits</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Meat">Meat</option>
+            <option value="Beverages">Beverages</option>
+        </select>
+        <button type="submit">Search</button>
+        <a href="/user/home" style="padding:8px 16px; background:#888; color:white; border-radius:6px; text-decoration:none;">Clear</a>
+    </form>
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+        <div class="product-card" th:each="product : ${products}">
+            <p class="category" th:text="${product.category}"></p>
+            <h3 th:text="${product.name}"></h3>
+            <p style="font-size:0.85rem; color:#666; margin-bottom:8px;" th:text="${product.description}"></p>
+            <p class="price">EGP <span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
+            <p style="font-size:0.8rem; color:#888;">In stock: <span th:text="${product.stock}"></span></p>
+            <form method="post" action="/user/cart/add" th:if="${product.stock > 0}">
+                <input type="hidden" name="productId" th:value="${product.id}">
+                <input type="number" name="quantity" value="1" min="1" th:max="${product.stock}">
+                <button type="submit" class="btn btn-primary" style="width:auto; margin-top:8px;">Add to Cart</button>
+            </form>
+            <p th:unless="${product.stock > 0}" style="color:red; margin-top:8px;">Out of Stock</p>
+        </div>
+    </div>
+
+    <p th:if="${#lists.isEmpty(products)}" style="text-align:center; color:#888; margin-top:40px;">No products found.</p>
+</div>
+</body>
+</html>
