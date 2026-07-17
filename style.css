@@ -1,0 +1,85 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
+
+/* Navbar */
+.navbar {
+    background: #2e7d32;
+    color: white;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.navbar a { color: white; text-decoration: none; margin-left: 16px; }
+.navbar a:hover { text-decoration: underline; }
+.navbar .brand { font-size: 1.4rem; font-weight: bold; }
+
+/* Container */
+.container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+
+/* Cards */
+.card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+
+/* Auth forms */
+.auth-box { max-width: 420px; margin: 60px auto; background: white; padding: 36px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.auth-box h2 { text-align: center; color: #2e7d32; margin-bottom: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 0.9rem; }
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem;
+}
+.form-group input:focus, .form-group select:focus { outline: none; border-color: #2e7d32; }
+.btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+.btn-primary { background: #2e7d32; color: white; width: 100%; margin-top: 8px; }
+.btn-primary:hover { background: #1b5e20; }
+.btn-danger { background: #c62828; color: white; }
+.btn-danger:hover { background: #b71c1c; }
+.btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+.btn-secondary { background: #555; color: white; }
+
+/* Alert */
+.alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; }
+.alert-error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+.alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+
+/* Product grid */
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.product-card { background: white; border-radius: 8px; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+.product-card h3 { font-size: 1rem; margin-bottom: 8px; }
+.product-card .price { color: #2e7d32; font-size: 1.1rem; font-weight: bold; }
+.product-card .category { color: #888; font-size: 0.8rem; margin-bottom: 8px; }
+.product-card form { margin-top: 12px; }
+.product-card input[type="number"] { width: 60px; padding: 4px; border: 1px solid #ccc; border-radius: 4px; }
+
+/* Filters */
+.filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.filters input, .filters select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; }
+.filters button { background: #2e7d32; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
+th { background: #2e7d32; color: white; }
+tr:hover { background: #f9f9f9; }
+
+/* Dashboard stats */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: white; padding: 24px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+.stat-card .number { font-size: 2rem; font-weight: bold; color: #2e7d32; }
+.stat-card .label { color: #888; margin-top: 4px; }
+
+/* Status badge */
+.badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+.badge-pending { background: #fff3e0; color: #e65100; }
+.badge-confirmed { background: #e3f2fd; color: #1565c0; }
+.badge-delivered { background: #e8f5e9; color: #2e7d32; }
+.badge-cancelled { background: #ffebee; color: #c62828; }
+
+/* Cart */
+.cart-table td { vertical-align: middle; }
+.total-row { font-weight: bold; font-size: 1.1rem; }
+
+@media (max-width: 600px) {
+    .stats { grid-template-columns: 1fr; }
+    .product-grid { grid-template-columns: repeat(2, 1fr); }
+}

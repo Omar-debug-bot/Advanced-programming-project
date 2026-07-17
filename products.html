@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Products - FreshMart Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <span class="brand">🛒 FreshMart Admin</span>
+    <div>
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/products">Products</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/orders">Orders</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2>Products</h2>
+        <a href="/admin/products/new" class="btn btn-primary" style="width:auto;">+ Add Product</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr><th>ID</th><th>Name</th><th>Category</th><th>Price (EGP)</th><th>Stock</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.id}"></td>
+                <td th:text="${product.name}"></td>
+                <td th:text="${product.category}"></td>
+                <td th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></td>
+                <td th:text="${product.stock}"></td>
+                <td>
+                    <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn btn-secondary btn-sm">Edit</a>
+                    &nbsp;
+                    <form method="post" th:action="@{/admin/products/delete/{id}(id=${product.id})}" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Delete this product?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

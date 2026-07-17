@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Form - FreshMart Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <span class="brand">🛒 FreshMart Admin</span>
+    <div>
+        <a href="/admin/products">Products</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="auth-box" style="margin-top:30px; max-width:500px;">
+        <h2 th:text="${product.id == null} ? 'Add Product' : 'Edit Product'"></h2>
+        <form method="post" action="/admin/products/save" th:object="${product}">
+            <input type="hidden" th:field="*{id}">
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" th:field="*{name}" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" th:field="*{description}">
+            </div>
+            <div class="form-group">
+                <label>Price (EGP)</label>
+                <input type="number" th:field="*{price}" step="0.01" required min="0">
+            </div>
+            <div class="form-group">
+                <label>Stock Quantity</label>
+                <input type="number" th:field="*{stock}" required min="0">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select th:field="*{category}">
+                    <option value="Dairy">Dairy</option>
+                    <option value="Bakery">Bakery</option>
+                    <option value="Fruits">Fruits</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Meat">Meat</option>
+                    <option value="Beverages">Beverages</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Product</button>
+            <a href="/admin/products" style="display:block; text-align:center; margin-top:12px;">Cancel</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>
